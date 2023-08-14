@@ -38,33 +38,32 @@
             return key;
         }
 
-        function updateKey() {
+        function updateKey(ipAddress) {
             const keyBox = document.getElementById('key-box');
             const currentTime = new Date().getTime();
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', 'get_ip.php', true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    const ipAddress = xhr.responseText;
+            const uniqueIdentifier = ipAddress;
+            const storageKey = `random_key_${uniqueIdentifier}`;
+            const storageTimeKey = `key_generated_time_${uniqueIdentifier}`;
 
-                    const uniqueIdentifier = `${ipAddress}_${new Date().toLocaleDateString()}`;
-                    const storageKey = `random_key_${uniqueIdentifier}`;
-                    const storageTimeKey = `key_generated_time_${uniqueIdentifier}`;
+            const existingKey = localStorage.getItem(storageKey);
 
-                    if (!localStorage.getItem(storageKey) || currentTime - localStorage.getItem(storageTimeKey) > 24 * 60 * 60 * 1000) {
-                        const newKey = generateRandomKey();
-                        localStorage.setItem(storageKey, newKey);
-                        localStorage.setItem(storageTimeKey, currentTime);
-                    }
+            if (!existingKey || currentTime - parseInt(localStorage.getItem(storageTimeKey)) > 24 * 60 * 60 * 1000) {
+                const newKey = generateRandomKey();
+                localStorage.setItem(storageKey, newKey);
+                localStorage.setItem(storageTimeKey, currentTime);
+            }
 
-                    keyBox.textContent = localStorage.getItem(storageKey);
-                }
-            };
-            xhr.send();
+            keyBox.textContent = localStorage.getItem(storageKey);
         }
 
-        updateKey();
+        // Fetch IP using ipify API
+        fetch('https://api.ipify.org?format=json')
+          .then(response => response.json())
+          .then(data => {
+            const ipAddress = data.ip;
+            updateKey(ipAddress);
+          });
     </script>
 </body>
 </html>
