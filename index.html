@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Key</title>
     <style>
         body {
             display: flex;
@@ -23,43 +24,32 @@
     </style>
 </head>
 <body>
-    <div id="key-box"></div>
-    
-    <script>
-        function generateRandomKey() {
-            const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            let key = '';
-            const keyLength = 10;
+    <div id="key-box">
+        <?php
+            $ip = $_SERVER['REMOTE_ADDR'];
+            session_id($ip);
+            session_start();
 
-            for (let i = 0; i < keyLength; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                key += characters[randomIndex];
+            if (!isset($_SESSION['random_key']) || !isset($_SESSION['key_timestamp']) || (time() - $_SESSION['key_timestamp']) > 86400) {
+                $_SESSION['random_key'] = generateRandomKey();
+                $_SESSION['key_timestamp'] = time();
             }
 
-            return key;
-        }
+            echo $_SESSION['random_key'];
+            
+            function generateRandomKey() {
+                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $key = '';
+                $key_length = 10;
 
-        function setKey() {
-            const keyBox = document.getElementById('key-box');
-            const storedKey = localStorage.getItem('random_key');
-            let key;
+                for ($i = 0; $i < $key_length; $i++) {
+                    $random_index = rand(0, strlen($characters) - 1);
+                    $key .= $characters[$random_index];
+                }
 
-            if (storedKey) {
-                key = storedKey;
-            } else {
-                key = generateRandomKey();
-                localStorage.setItem('random_key', key);
+                return $key;
             }
-
-            keyBox.textContent = key;
-        }
-
-        setKey(); // Chamada inicial para exibir a chave
-
-        setInterval(() => {
-            localStorage.removeItem('random_key'); // Remover a chave a cada 24 horas
-            setKey();
-        }, 24 * 60 * 60 * 1000); // 24 horas em milissegundos
-    </script>
+        ?>
+    </div>
 </body>
 </html>
