@@ -42,36 +42,26 @@
             const keyBox = document.getElementById('key-box');
             const currentTime = new Date().getTime();
 
-            const uniqueIdentifier = getUniqueIdentifier();
-            const cookieKey = `random_key_${uniqueIdentifier}`;
-            const cookieTimeKey = `key_generated_time_${uniqueIdentifier}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'get_ip.php', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const ipAddress = xhr.responseText;
 
-            const existingKey = getCookie(cookieKey);
+                    const uniqueIdentifier = `${ipAddress}_${new Date().toLocaleDateString()}`;
+                    const storageKey = `random_key_${uniqueIdentifier}`;
+                    const storageTimeKey = `key_generated_time_${uniqueIdentifier}`;
 
-            if (!existingKey || currentTime - parseInt(getCookie(cookieTimeKey)) > 24 * 60 * 60 * 1000) {
-                const newKey = generateRandomKey();
-                setCookie(cookieKey, newKey, 1); // 1 day expiration
-                setCookie(cookieTimeKey, currentTime, 1);
-            }
+                    if (!localStorage.getItem(storageKey) || currentTime - localStorage.getItem(storageTimeKey) > 24 * 60 * 60 * 1000) {
+                        const newKey = generateRandomKey();
+                        localStorage.setItem(storageKey, newKey);
+                        localStorage.setItem(storageTimeKey, currentTime);
+                    }
 
-            keyBox.textContent = getCookie(cookieKey);
-        }
-
-        function getUniqueIdentifier() {
-            const userAgent = navigator.userAgent;
-            const ipAddress = new Date().toLocaleDateString(); // Pode ser o IP real ou outras informações únicas.
-            return `${userAgent}_${ipAddress}`;
-        }
-
-        function setCookie(name, value, days) {
-            const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
-            document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-        }
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+                    keyBox.textContent = localStorage.getItem(storageKey);
+                }
+            };
+            xhr.send();
         }
 
         updateKey();
