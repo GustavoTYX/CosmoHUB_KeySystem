@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Key</title>
+    <title>CosmoHUB</title>
     <style>
         body {
             display: flex;
@@ -9,30 +9,17 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        #key-box {
-            padding: 20px;
-            background-color: #3498db;
-            color: white;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 24px;
         }
     </style>
 </head>
 <body>
     <div id="key-box">
         <?php
-            $ip = $_SERVER['REMOTE_ADDR'];
-            session_id($ip);
             session_start();
-
-            if (!isset($_SESSION['random_key']) || !isset($_SESSION['key_timestamp']) || (time() - $_SESSION['key_timestamp']) > 86400) {
+            
+            if (!isset($_SESSION['random_key']) || !isset($_SESSION['key_generated_time']) || time() - $_SESSION['key_generated_time'] > 24 * 60 * 60) {
                 $_SESSION['random_key'] = generateRandomKey();
-                $_SESSION['key_timestamp'] = time();
+                $_SESSION['key_generated_time'] = time();
             }
 
             echo $_SESSION['random_key'];
