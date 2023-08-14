@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>  
+<head>
     <style>
         body {
             display: flex;
@@ -23,31 +23,43 @@
     </style>
 </head>
 <body>
-    <div id="key-box">
-        <?php
-            $ip = $_SERVER['REMOTE_ADDR'];
-            session_id($ip);
-            session_start();
+    <div id="key-box"></div>
+    
+    <script>
+        function generateRandomKey() {
+            const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let key = '';
+            const keyLength = 10;
 
-            if (!isset($_SESSION['random_key'])) {
-                $_SESSION['random_key'] = generateRandomKey();
+            for (let i = 0; i < keyLength; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                key += characters[randomIndex];
             }
 
-            echo $_SESSION['random_key'];
-            
-            function generateRandomKey() {
-                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                $key = '';
-                $key_length = 10;
+            return key;
+        }
 
-                for ($i = 0; $i < $key_length; $i++) {
-                    $random_index = rand(0, strlen($characters) - 1);
-                    $key .= $characters[$random_index];
-                }
+        function setKey() {
+            const keyBox = document.getElementById('key-box');
+            const storedKey = localStorage.getItem('random_key');
+            let key;
 
-                return $key;
+            if (storedKey) {
+                key = storedKey;
+            } else {
+                key = generateRandomKey();
+                localStorage.setItem('random_key', key);
             }
-        ?>
-    </div>
+
+            keyBox.textContent = key;
+        }
+
+        setKey(); // Chamada inicial para exibir a chave
+
+        setInterval(() => {
+            localStorage.removeItem('random_key'); // Remover a chave a cada 24 horas
+            setKey();
+        }, 24 * 60 * 60 * 1000); // 24 horas em milissegundos
+    </script>
 </body>
 </html>
