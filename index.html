@@ -10,33 +10,48 @@
             height: 100vh;
             margin: 0;
         }
+
+        #key-box {
+            padding: 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
-    <div id="key-box">
-        <?php
-            session_start();
-            
-            if (!isset($_SESSION['random_key']) || !isset($_SESSION['key_generated_time']) || time() - $_SESSION['key_generated_time'] > 24 * 60 * 60) {
-                $_SESSION['random_key'] = generateRandomKey();
-                $_SESSION['key_generated_time'] = time();
+    <div id="key-box"></div>
+
+    <script>
+        function generateRandomKey() {
+            const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let key = '';
+            const keyLength = 10;
+
+            for (let i = 0; i < keyLength; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                key += characters[randomIndex];
             }
 
-            echo $_SESSION['random_key'];
-            
-            function generateRandomKey() {
-                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                $key = '';
-                $key_length = 10;
+            return key;
+        }
 
-                for ($i = 0; $i < $key_length; $i++) {
-                    $random_index = rand(0, strlen($characters) - 1);
-                    $key .= $characters[$random_index];
-                }
+        function updateKey() {
+            const keyBox = document.getElementById('key-box');
+            const currentTime = new Date().getTime();
 
-                return $key;
+            if (!localStorage.getItem('random_key') || currentTime - localStorage.getItem('key_generated_time') > 24 * 60 * 60 * 1000) {
+                const newKey = generateRandomKey();
+                localStorage.setItem('random_key', newKey);
+                localStorage.setItem('key_generated_time', currentTime);
             }
-        ?>
-    </div>
+
+            keyBox.textContent = localStorage.getItem('random_key');
+        }
+
+        updateKey();
+    </script>
 </body>
 </html>
