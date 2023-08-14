@@ -57,6 +57,12 @@
             keyBox.textContent = localStorage.getItem(storageKey);
         }
 
+        if (!existingKey || currentTime - parseInt(localStorage.getItem(storageTimeKey)) > 24 * 60 * 60 * 1000) {
+    const newKey = generateRandomKey();
+    localStorage.setItem(storageKey, newKey);
+    localStorage.setItem(storageTimeKey, currentTime);
+}
+        
         // Fetch IP using ipify API
         fetch('https://api.ipify.org?format=json')
           .then(response => response.json())
