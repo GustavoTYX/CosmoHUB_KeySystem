@@ -42,13 +42,23 @@
             const keyBox = document.getElementById('key-box');
             const currentTime = new Date().getTime();
 
-            if (!localStorage.getItem('random_key') || currentTime - localStorage.getItem('key_generated_time') > 24 * 60 * 60 * 1000) {
+            const uniqueIdentifier = getUniqueIdentifier();
+            const storageKey = `random_key_${uniqueIdentifier}`;
+            const storageTimeKey = `key_generated_time_${uniqueIdentifier}`;
+
+            if (!localStorage.getItem(storageKey) || currentTime - localStorage.getItem(storageTimeKey) > 24 * 60 * 60 * 1000) {
                 const newKey = generateRandomKey();
-                localStorage.setItem('random_key', newKey);
-                localStorage.setItem('key_generated_time', currentTime);
+                localStorage.setItem(storageKey, newKey);
+                localStorage.setItem(storageTimeKey, currentTime);
             }
 
-            keyBox.textContent = localStorage.getItem('random_key');
+            keyBox.textContent = localStorage.getItem(storageKey);
+        }
+
+        function getUniqueIdentifier() {
+            const userAgent = navigator.userAgent;
+            const ipAddress = new Date().toLocaleDateString(); // Pode ser o IP real ou outras informações únicas.
+            return `${userAgent}_${ipAddress}`;
         }
 
         updateKey();
