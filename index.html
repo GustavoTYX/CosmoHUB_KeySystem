@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>  
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        #key-box {
+            padding: 20px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="key-box">
+        <?php
+            $ip = $_SERVER['REMOTE_ADDR'];
+            session_id($ip);
+            session_start();
+
+            if (!isset($_SESSION['random_key'])) {
+                $_SESSION['random_key'] = generateRandomKey();
+            }
+
+            echo $_SESSION['random_key'];
+            
+            function generateRandomKey() {
+                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $key = '';
+                $key_length = 10;
+
+                for ($i = 0; $i < $key_length; $i++) {
+                    $random_index = rand(0, strlen($characters) - 1);
+                    $key .= $characters[$random_index];
+                }
+
+                return $key;
+            }
+        ?>
+    </div>
+</body>
+</html>
