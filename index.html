@@ -63,6 +63,9 @@
           .then(data => {
             const ipAddress = data.ip;
             updateKey(ipAddress);
+          })
+          .catch(error => {
+            console.error('Error when getting IP:', error);
           });
     </script>
 </body>
